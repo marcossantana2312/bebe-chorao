@@ -11,10 +11,6 @@ const dorInterval = [801, 1000]
 
 const PORT = 3000;
 
-function getRandomValue(min = 1, max = 10) {
-    return Math.floor(Math.random() * (max - min + 1)) + 1;
-}
-
 app.use(bodyParser.json());
 
 db.defaults({ "choroOcorrencias": { "sono": [], "colica": [], "fome": [], "dor": [] } })
@@ -59,8 +55,7 @@ app.post("/", async (req, res) => {
 app.get('/', async (req, res) => {
 
     const dbResponse = db.get("choroOcorrencias").value();
-    const { inicio, fim } = req.params;
-    console.log(req.params)
+    const { inicio, fim } = req.query;
 
     const ret = {
         colica: dbResponse["colica"].filter(date => inicio && fim ? date >= inicio && date <= fim :  true).length,
