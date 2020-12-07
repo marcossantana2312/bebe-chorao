@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require("body-parser");
 const db = require("./lowDB");
+const rc4 = require("./rc4");
 
 const app = express()
 
@@ -16,32 +17,41 @@ app.use(bodyParser.json());
 db.defaults({ "choroOcorrencias": { "sono": [], "colica": [], "fome": [], "dor": [] } })
     .write();
 
+app.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    if (username && password) {
+        res.status(200).send("Login realizado com succeso!");
+    }
+    res.status(401).send("Digite login e senha");
+})
+
 app.post("/", async (req, res) => {
     const { data } = req.body;
 
     await Promise.all(data.map(value => {
         const now = new Date();
-
+        value = +rc4(value)
         if (value >= sonoInterval[0] && value <= sonoInterval[1]) {
             return db
                 .get("choroOcorrencias")
                 .get("sono")
                 .push(now)
                 .write();
-        } else if (value >= fomeInterval[0] && value <= fomeInterval[1], now) {
+        } else if (value >= colicaInterval[0] && value <= colicaInterval[1]) {
             return db
                 .get("choroOcorrencias")
                 .get("colica")
                 .push(now)
                 .write();
-        } else if (value >= colicaInterval[0] && value <= colicaInterval[1], now) {
+        } else if (value >= fomeInterval[0] && value <= fomeInterval[1]) {
             return db
                 .get("choroOcorrencias")
                 .get("fome")
                 .push(now)
                 .write();
             } else if (value >= dorInterval[0] && value <= dorInterval[1]) {
-            return db
+                return db
                 .get("choroOcorrencias")
                 .get("dor")
                 .push(now)
